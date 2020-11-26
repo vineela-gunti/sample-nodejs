@@ -10,7 +10,7 @@ pipeline {
     }
 
     environment {
-        TEST_PROJECT = "BHIM"
+        TEST_PROJECT = "bhim-test"
         
 		OPENSHIFT_REGISTRY = "default-route-openshift-image-registry.accelerite-openshift-la-fbc03b92adfe8eb26bb2ca99edfad3f7-0000.che01.containers.appdomain.cloud"
 		NEXUS_REPO = "docker-nexus-repo.accelerite-openshift-la-fbc03b92adfe8eb26bb2ca99edfad3f7-0000.che01.containers.appdomain.cloud"
