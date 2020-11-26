@@ -1,0 +1,101 @@
+pipeline {
+    options {
+        // set a timeout of 60 minutes for this pipeline
+        timeout(time: 60, unit: 'MINUTES')
+    }
+    agent {
+      node {
+          label 'maven-skopeo-agent-with-gid'
+      }
+    }
+
+    environment {
+        TEST_PROJECT = "BHIM-TEST"
+        
+		OPENSHIFT_REGISTRY = "default-route-openshift-image-registry.accelerite-openshift-la-fbc03b92adfe8eb26bb2ca99edfad3f7-0000.che01.containers.appdomain.cloud"
+		NEXUS_REPO = "docker-nexus-repo.accelerite-openshift-la-fbc03b92adfe8eb26bb2ca99edfad3f7-0000.che01.containers.appdomain.cloud"
+		OPENSHIFT_API= "https://c103-e.jp-tok.containers.cloud.ibm.com:32369"
+		
+		VERSION = "0.0.1"
+		
+		IAM_USER = credentials('IAM_User')
+		NEXUS_USER = credentials('Nexus_User')
+		
+        APP_NAME = "BHIM"
+        IAM_TOKEN = credentials('IAM_TOKEN')
+    }
+
+    stages {
+        stage('Compilation, JUnit Testing & Artifact Creation') {
+            steps {
+            	script {
+                	def antVersion = 'ANT1.8'
+               		withEnv( ["ANT_HOME=${tool antVersion}"] ) {
+    					sh '$ANT_HOME/bin/ant -file JKEBuildScripts/sample.jke.build/build2_3Nov.xml -DbuildResultUUID=${buildResultUUID} -DbuildDefinitionId=JKEBankingBuildDef1 -DrepositoryAddress=https://169.38.133.229:9445/ccm all -lib /var/lib/jenkins/EWM-BuildSystem-Toolkit-Linux64-7.0/jazz/buildsystem/buildtoolkit -lib JKEBuildScripts/libs/ecj-4.6.3.jar -verbose'
+					}
+				}
+            }
+            post {
+       			success {
+           			archiveArtifacts artifacts: 'build/*.zip', fingerprint: true
+        			junit 'build/test.results/*.xml'
+     			}
+    		}
+        } 
+        
+        stage('BHIM Deployment on Test Environment') {
+            steps {              
+                script {
+                    openshift.withCluster(env.OPENSHIFT_API) {
+						echo '### Creating a new project in Test env ###'
+						sh '''
+						    oc login --token=${IAM_TOKEN} --server=${OPENSHIFT_API}
+							if [ ! -z "$(oc get projects | grep ${TEST_PROJECT})" ]
+							then
+								echo "Deleting ${TEST_PROJECT} project"
+								
+									oc proxy &
+									oc project ${TEST_PROJECT}
+									oc delete --all all,secret,pvc > /dev/null
+									oc get ns ${TEST_PROJECT} -o json > tempfile
+									sed -i 's/"kubernetes"//g' tempfile
+									
+									curl -k -H "Content-Type: application/json" -X PUT --data-binary @tempfile http://127.0.0.1:8001/api/v1/namespaces/"${TEST_PROJECT}"/finalize
+									sleep 50
+									oc delete project ${TEST_PROJECT}
+									sleep 50
+
+							fi
+							
+							echo '### Creating new project in Development ###'
+						    oc new-project $TEST_PROJECT
+						    oc new-build jboss-webserver31-tomcat8-openshift:1.4 --name=${APP_NAME} --binary=true -n ${TEST_PROJECT}
+						    oc start-build ${APP_NAME} --from-file=build/distro/jke.war --wait=true --follow=true
+						    oc new-app ${APP_NAME}:latest -n ${TEST_PROJECT}
+						    oc expose svc/${APP_NAME} -n ${TEST_PROJECT}
+						'''
+						routeHost = readFile('routehost').trim()
+						echo "Deployment to Production is completed. Access the API endpoint at the URL http://${routeHost}/jke/#state=welcome"
+                    }
+                }
+            }
+        }
+
+		stage('Push Image to Nexus Repository') {
+            steps {
+                echo '### Copy image from openshift internal registry to Nexus repository ###'
+                sh 'skopeo copy --src-creds=${IAM_USER} --dest-creds=${NEXUS_USER} --dest-tls-verify=false  docker://${OPENSHIFT_REGISTRY}/${TEST_PROJECT}/${APP_NAME}:latest docker://${NEXUS_REPO}/${APP_NAME}:test'
+            }
+        }     
+    }
+    
+    post {
+        failure {
+            
+             mail bcc: '', body: "${currentBuild.currentResult}: Job ${env.JOB_NAME} build ${env.BUILD_NUMBER}\n More info at: ${env.BUILD_URL}", cc: '', from: '', replyTo: '', subject: "Jenkins Build ${currentBuild.currentResult}: Job ${env.JOB_NAME}", to: 'pslelm123456@gmail.com'
+            
+            
+        }
+    }
+    
+}
