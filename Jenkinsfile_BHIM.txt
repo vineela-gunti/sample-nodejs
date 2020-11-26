@@ -63,8 +63,6 @@ pipeline {
 							
 							echo '### Creating new project in Development ###'
 						    oc new-project $TEST_PROJECT
-						    //oc new-build jboss-webserver31-tomcat8-openshift:1.4 --name=${APP_NAME} --binary=true -n ${TEST_PROJECT}
-						    //oc start-build ${APP_NAME} --from-file=build/distro/jke.war --wait=true --follow=true
 						    oc new-app https://github.com/vineela-gunti/sample-nodejs -n ${TEST_PROJECT}
 						    oc expose svc/${APP_NAME} -n ${TEST_PROJECT}
 						'''
