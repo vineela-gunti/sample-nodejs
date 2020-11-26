@@ -34,11 +34,7 @@ pipeline {
 					
 				}
             }
-            post {
-       			success {
-           			
-     			}
-    		}
+            
         } 
         
         stage('BHIM Deployment on Test Environment') {
