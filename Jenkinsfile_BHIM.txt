@@ -25,7 +25,7 @@ pipeline {
         IAM_TOKEN = credentials('IAM_TOKEN')
     }
 
-    stages {
+   /* stages {
         stage('Compilation, JUnit Testing & Artifact Creation') {
             steps {
             	script {
@@ -35,7 +35,7 @@ pipeline {
 				}
             }
             
-        } 
+        } */
         
         stage('BHIM Deployment on Test Environment') {
             steps {              
@@ -66,8 +66,7 @@ pipeline {
 						    oc new-app --name=${APP_NAME} nodejs~https://github.com/vineela-gunti/sample-nodejs  -n ${TEST_PROJECT}
 						    oc expose svc/${APP_NAME} -n ${TEST_PROJECT}
 						'''
-						routeHost = readFile('routehost').trim()
-						echo "Deployment to Production is completed. Access the API endpoint at the URL http://${routeHost}/jke/#state=welcome"
+						
                     }
                 }
             }
