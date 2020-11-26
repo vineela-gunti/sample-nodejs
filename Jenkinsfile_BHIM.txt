@@ -5,7 +5,7 @@ pipeline {
     }
     agent {
       node {
-          label 'maven-skopeo-agent-with-gid'
+          label 'nodejs'
       }
     }
 
