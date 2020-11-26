@@ -29,16 +29,14 @@ pipeline {
         stage('Compilation, JUnit Testing & Artifact Creation') {
             steps {
             	script {
-                	def antVersion = 'ANT1.8'
-               		withEnv( ["ANT_HOME=${tool antVersion}"] ) {
-    					sh '$ANT_HOME/bin/ant -file JKEBuildScripts/sample.jke.build/build2_3Nov.xml -DbuildResultUUID=${buildResultUUID} -DbuildDefinitionId=JKEBankingBuildDef1 -DrepositoryAddress=https://169.38.133.229:9445/ccm all -lib /var/lib/jenkins/EWM-BuildSystem-Toolkit-Linux64-7.0/jazz/buildsystem/buildtoolkit -lib JKEBuildScripts/libs/ecj-4.6.3.jar -verbose'
-					}
+                	
+    					sh 'npm install --unsafe-perm=true --allow-root'
+					
 				}
             }
             post {
        			success {
-           			archiveArtifacts artifacts: 'build/*.zip', fingerprint: true
-        			junit 'build/test.results/*.xml'
+           			
      			}
     		}
         } 
@@ -69,9 +67,9 @@ pipeline {
 							
 							echo '### Creating new project in Development ###'
 						    oc new-project $TEST_PROJECT
-						    oc new-build jboss-webserver31-tomcat8-openshift:1.4 --name=${APP_NAME} --binary=true -n ${TEST_PROJECT}
-						    oc start-build ${APP_NAME} --from-file=build/distro/jke.war --wait=true --follow=true
-						    oc new-app ${APP_NAME}:latest -n ${TEST_PROJECT}
+						    //oc new-build jboss-webserver31-tomcat8-openshift:1.4 --name=${APP_NAME} --binary=true -n ${TEST_PROJECT}
+						    //oc start-build ${APP_NAME} --from-file=build/distro/jke.war --wait=true --follow=true
+						    oc new-app https://github.com/vineela-gunti/sample-nodejs -n ${TEST_PROJECT}
 						    oc expose svc/${APP_NAME} -n ${TEST_PROJECT}
 						'''
 						routeHost = readFile('routehost').trim()
