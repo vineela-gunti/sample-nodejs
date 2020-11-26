@@ -25,7 +25,8 @@ pipeline {
         IAM_TOKEN = credentials('IAM_TOKEN')
     }
 
-   /* stages {
+    stages {
+    /*
         stage('Compilation, JUnit Testing & Artifact Creation') {
             steps {
             	script {
