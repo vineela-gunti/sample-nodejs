@@ -26,7 +26,7 @@ pipeline {
     }
 
     stages {
-    /*
+    
         stage('Compilation, JUnit Testing & Artifact Creation') {
             steps {
             	script {
@@ -36,7 +36,7 @@ pipeline {
 				}
             }
             
-        } */
+        } 
         
         stage('BHIM Deployment on Test Environment') {
             steps {              
