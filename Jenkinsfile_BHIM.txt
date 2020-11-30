@@ -21,7 +21,7 @@ pipeline {
 		IAM_USER = credentials('IAM_User')
 		NEXUS_USER = credentials('Nexus_User')
 		
-        APP_NAME = "bhim"
+        APP_NAME = "bhim1"
         IAM_TOKEN = credentials('IAM_TOKEN')
     }
 
@@ -45,7 +45,7 @@ pipeline {
 						echo '### Creating a new project in Test env ###'
 						sh '''
 						    oc login --token=${IAM_TOKEN} --server=${OPENSHIFT_API}
-							if [ ! -z "$(oc get projects | grep ${TEST_PROJECT})" ]
+							/* if [ ! -z "$(oc get projects | grep ${TEST_PROJECT})" ]
 							then
 								echo "Deleting ${TEST_PROJECT} project"
 								
@@ -60,10 +60,10 @@ pipeline {
 									oc delete project ${TEST_PROJECT}
 									sleep 50
 
-							fi
+							fi */
 							
 							echo '### Creating new project in Development ###'
-						    oc new-project $TEST_PROJECT
+						   // oc new-project $TEST_PROJECT
 						    oc new-app --name=${APP_NAME} nodejs~https://github.com/vineela-gunti/sample-nodejs  -n ${TEST_PROJECT}
 						    oc expose svc/${APP_NAME} -n ${TEST_PROJECT}
 						'''
