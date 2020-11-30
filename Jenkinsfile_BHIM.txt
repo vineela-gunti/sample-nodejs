@@ -73,6 +73,19 @@ pipeline {
             }
         }
 
+                stage('Wait for deployment to be ready') {
+            steps {
+                script {
+                    openshift.withCluster() {
+                        openshift.withProject( "${TEST_PROJECT}" ) {
+                            openshift.selector("dc", "${APP_NAME}").related('pods').untilEach(1) {
+                                return (it.object().status.phase == "Running")
+                            }
+                        }
+                    }
+                }
+            }
+        }
 		stage('Push Image to Nexus Repository') {
             steps {
                 echo '### Copy image from openshift internal registry to Nexus repository ###'
