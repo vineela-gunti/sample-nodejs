@@ -94,7 +94,7 @@ pipeline {
         }     
     }
     
-                 stage('Deploy Application') {
+                stage('Deploy Application') {
             steps {              
                 script {
                     openshift.withCluster(env.OPENSHIFT_API) {
