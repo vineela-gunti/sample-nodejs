@@ -92,7 +92,7 @@ pipeline {
                 sh 'skopeo copy --src-creds=${IAM_USER} --dest-creds=${NEXUS_USER} --dest-tls-verify=false  docker://${OPENSHIFT_REGISTRY}/${TEST_PROJECT}/${APP_NAME}:latest docker://${NEXUS_REPO}/${APP_NAME}:test'
             }
         }     
-    }
+    
     
                 stage('Deploy BHIM Application') {
             steps {              
@@ -109,6 +109,7 @@ pipeline {
                 }
             }
         }
+    }
         post {
             failure {
             
