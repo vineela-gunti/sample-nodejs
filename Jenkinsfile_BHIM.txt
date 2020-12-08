@@ -101,23 +101,22 @@ pipeline {
 						echo '### Creating a new project in Test env ###'
 						sh '''
 						    oc login --token=${IAM_TOKEN} --server=${OPENSHIFT_API}
-							echo '### Creating new project in Development ###'
 						    oc project $TEST_PROJECT
 						    oc new-app --name=${APP_NAME} ${APP_NAME}:latest  -n ${TEST_PROJECT}
-						   ### oc expose svc/${APP_NAME} -n ${TEST_PROJECT}
+						    oc expose svc/${APP_NAME} -n ${TEST_PROJECT}
 						'''
 						
                     }
                 }
             }
         }
-    post {
-        failure {
+        post {
+            failure {
             
-             mail bcc: '', body: "${currentBuild.currentResult}: Job ${env.JOB_NAME} build ${env.BUILD_NUMBER}\n More info at: ${env.BUILD_URL}", cc: '', from: '', replyTo: '', subject: "Jenkins Build ${currentBuild.currentResult}: Job ${env.JOB_NAME}", to: 'pslelm123456@gmail.com'
+                 mail bcc: '', body: "${currentBuild.currentResult}: Job ${env.JOB_NAME} build ${env.BUILD_NUMBER}\n More info at: ${env.BUILD_URL}", cc: '', from: '', replyTo: '', subject: "Jenkins Build ${currentBuild.currentResult}: Job ${env.JOB_NAME}", to: 'pslelm123456@gmail.com'
             
             
+            }
         }
-    }
     
-}
+    }
