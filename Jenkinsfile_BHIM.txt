@@ -78,9 +78,12 @@ pipeline {
                 script {
                     openshift.withCluster() {
                         openshift.withProject( "${TEST_PROJECT}" ) {
-                            openshift.selector("build", "${APP_NAME}").related('pods').untilEach(1) {
+                            def builds = openshift.selector("bc", templateName).related('builds')
+			    timeout(2) {
+			      builds.untilEach(1) {
                                 return (it.object().status.phase == "Complete")
                             }
+			  }  
                         }
                     }
                 }
