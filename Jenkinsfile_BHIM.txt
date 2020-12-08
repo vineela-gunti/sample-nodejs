@@ -95,10 +95,13 @@ pipeline {
     }
     
             stage('Deploy application') {
-            steps {
-                echo '### Deploying the application ###'
-                oc new-app ${APP_NAME}:latest -n ${TEST_PROJECT}
-		oc expose svc/${APP_NAME} -n ${TEST_PROJECT}
+             steps {              
+                script {
+                    openshift.withCluster(env.OPENSHIFT_API) {
+                          echo '### Deploying the application ###'
+                          oc new-app --name=${APP_NAME} ${APP_NAME}:latest -n ${TEST_PROJECT}
+		          oc expose svc/${APP_NAME} -n ${TEST_PROJECT}
+		}	  
             }
         }     
     }           
