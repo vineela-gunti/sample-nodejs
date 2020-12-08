@@ -21,7 +21,7 @@ pipeline {
 		IAM_USER = credentials('IAM_User')
 		NEXUS_USER = credentials('Nexus_User')
 		
-        APP_NAME = "bhim1"
+        APP_NAME = "bhim2"
         IAM_TOKEN = credentials('IAM_TOKEN')
     }
 
@@ -64,8 +64,8 @@ pipeline {
 							
 							echo '### Creating new project in Development ###'
 						    oc new-project $TEST_PROJECT
-						    oc new-app --name=${APP_NAME} nodejs~https://github.com/vineela-gunti/sample-nodejs  -n ${TEST_PROJECT}
-						    oc expose svc/${APP_NAME} -n ${TEST_PROJECT}
+						    oc new-build --name=${APP_NAME} nodejs~https://github.com/vineela-gunti/sample-nodejs  -n ${TEST_PROJECT}
+						   ### oc expose svc/${APP_NAME} -n ${TEST_PROJECT}
 						'''
 						
                     }
@@ -78,8 +78,8 @@ pipeline {
                 script {
                     openshift.withCluster() {
                         openshift.withProject( "${TEST_PROJECT}" ) {
-                            openshift.selector("dc", "${APP_NAME}").related('pods').untilEach(1) {
-                                return (it.object().status.phase == "Running")
+                            openshift.selector("bc", "${APP_NAME}").related('pods').untilEach(1) {
+                                return (it.object().status.phase == "Completed")
                             }
                         }
                     }
@@ -94,6 +94,14 @@ pipeline {
         }     
     }
     
+            stage('Deploy application') {
+            steps {
+                echo '### Deploying the application ###'
+                oc new-app --name=${APP_NAME} ${APP_NAME}:latest -n ${TEST_PROJECT}
+		oc expose svc/${APP_NAME} -n ${TEST_PROJECT}
+            }
+        }     
+    }           
     post {
         failure {
             
