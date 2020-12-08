@@ -80,8 +80,7 @@ pipeline {
                         openshift.withProject( "${TEST_PROJECT}" ) {
                             def builds = openshift.selector("bc","${APP_NAME}").related('builds')
 			      builds.untilEach(1) {
-                                return (it.object().status.phase == "Complete")
-                            }
+                                return (it.object().status.phase == "Complete")                            
 			  }  
                         }
                     }
