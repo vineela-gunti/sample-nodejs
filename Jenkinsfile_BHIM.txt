@@ -94,15 +94,14 @@ pipeline {
         }     
     }
     
-                stage('Deploy Application') {
+                stage('Deploy BHIM Application') {
             steps {              
                 script {
                     openshift.withCluster(env.OPENSHIFT_API) {
-						echo '### Creating a new project in Test env ###'
 						sh '''
 						    oc login --token=${IAM_TOKEN} --server=${OPENSHIFT_API}
 						    oc project $TEST_PROJECT
-						    oc new-app --name=${APP_NAME} ${APP_NAME}:latest  -n ${TEST_PROJECT}
+						    oc new-app --name=${APP_NAME} ${APP_NAME}:latest -n ${TEST_PROJECT}
 						    oc expose svc/${APP_NAME} -n ${TEST_PROJECT}
 						'''
 						
