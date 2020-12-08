@@ -90,7 +90,7 @@ pipeline {
 		stage('Push Image to Nexus Repository') {
             steps {
                 echo '### Copy image from openshift internal registry to Nexus repository ###'
-                sh 'skopeo copy --src-creds=${IAM_USER} --dest-creds=${NEXUS_USER} --dest-tls-verify=false  docker://${OPENSHIFT_REGISTRY}/${TEST_PROJECT}/${APP_NAME}:latest docker://${NEXUS_REPO}/${APP_NAME}:test'
+                sh 'skopeo copy --src-creds=${IAM_USER} --dest-creds=${NEXUS_USER} --dest-tls-verify=false  docker://${OPENSHIFT_REGISTRY}/${TEST_PROJECT}/${APP_NAME}:latest docker://${NEXUS_REPO}/${APP_NAME}:latest'
             }
         }     
     
