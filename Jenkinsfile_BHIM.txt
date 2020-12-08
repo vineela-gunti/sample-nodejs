@@ -65,7 +65,7 @@ pipeline {
 							echo '### Creating new project in Development ###'
 						    oc new-project $TEST_PROJECT
 						    oc new-build --name=${APP_NAME} nodejs~https://github.com/vineela-gunti/sample-nodejs  -n ${TEST_PROJECT}
-						   ### oc expose svc/${APP_NAME} -n ${TEST_PROJECT}
+						   
 						'''
 						
                     }
@@ -73,7 +73,7 @@ pipeline {
             }
         }
 
-                stage('Wait for deployment to be ready') {
+                stage('Wait for build to be ready') {
             steps {
                 script {
                     openshift.withCluster() {
