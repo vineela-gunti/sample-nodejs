@@ -27,6 +27,12 @@ pipeline {
 
     stages {
     
+        stage('Pipeline Call') {
+            steps {
+                build(job: 'hello-world')
+             }
+        }
+    
         stage('Compilation, JUnit Testing & Artifact Creation') {
             steps {
             	script {
