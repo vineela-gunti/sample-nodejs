@@ -21,7 +21,7 @@ pipeline {
 		IAM_USER = credentials('IAM_User')
 		NEXUS_USER = credentials('Nexus_User')
 		
-        APP_NAME = "bhim2"
+        APP_NAME = "bhim3"
         IAM_TOKEN = credentials('IAM_TOKEN')
     }
 
