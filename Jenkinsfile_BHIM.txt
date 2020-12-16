@@ -110,30 +110,30 @@ pipeline {
 						    oc project $TEST_PROJECT
 						    echo '### creating persistent volume and persistent volume claim ###'
 						    echo "apiVersion: v1
-						    kind: PersistentVolume
-						    metadata:
-						      name: bhim-volume
-						      labels:
-						        type: local
-						    spec:
-						      storageClassName: ibmc-file-gold-gid
-						      capacity:
-						        storage: 2Gi
-						      accessModes:
-						        - ReadWriteOnce
-						      hostPath:
-						        path: "/mnt/data"" | oc -n ${TEST_PROJECT} apply -f -
+kind: PersistentVolume
+metadata:
+  name: bhim-volume
+  labels:
+    type: local
+spec:
+  storageClassName: ibmc-file-gold-gid
+  capacity:
+    storage: 2Gi
+  accessModes:
+    - ReadWriteOnce
+  hostPath:
+    path: "/mnt/data"" | oc -n ${TEST_PROJECT} apply -f -
 							
 						    echo "apiVersion: v1
-						    kind: PersistentVolumeClaim
-						    metadata:
-						      name: myclaim
-						    spec:
-						      accessModes:
-						      - ReadWriteOnce
-						      resources:
-						        requests:
-						          storage: 1Gi" | oc -n ${TEST_PROJECT} apply -f	
+kind: PersistentVolumeClaim
+metadata:
+  name: myclaim
+spec:
+  accessModes:
+  - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi" | oc -n ${TEST_PROJECT} apply -f	
 						    oc new-app --name ${APP_NAME} 169.38.133.228:5000/${APP_NAME}:latest --insecure-registry=true -n ${TEST_PROJECT}
 						   ### oc new-app --name=${APP_NAME} ${APP_NAME}:latest -n ${TEST_PROJECT}
 						    oc expose svc/${APP_NAME} -n ${TEST_PROJECT}
