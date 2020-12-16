@@ -71,7 +71,7 @@ pipeline {
 							echo '### Creating new project in Development ###'
 						    oc new-project $TEST_PROJECT
 						    oc new-build --name=${APP_NAME} nodejs~https://github.com/vineela-gunti/sample-nodejs --insecure-registry=true  -n ${TEST_PROJECT}
-						    oc create -f ${bhim_config} -n ${TEST_PROJECT}
+						    
 
 						'''
 						
@@ -109,7 +109,7 @@ pipeline {
 						sh '''
 						    oc login --token=${IAM_TOKEN} --server=${OPENSHIFT_API}
 						    oc project $TEST_PROJECT
-						    echo '### creating persistent volume and persistent volume claim ###'
+						 /*   echo '### creating persistent volume and persistent volume claim ###'
 						    echo "apiVersion: v1
 kind: PersistentVolume
 metadata:
@@ -123,7 +123,7 @@ spec:
   accessModes:
     - ReadWriteOnce
   hostPath:
-    path: "/mnt/data"" | oc -n ${TEST_PROJECT} apply -f -
+    path: "/mnt/data"" | oc -n ${TEST_PROJECT} apply -f - */
 							
 						    echo "apiVersion: v1
 kind: PersistentVolumeClaim
@@ -138,7 +138,11 @@ spec:
 						    oc new-app --name ${APP_NAME} 169.38.133.228:5000/${APP_NAME}:latest --insecure-registry=true -n ${TEST_PROJECT}
 						   ### oc new-app --name=${APP_NAME} ${APP_NAME}:latest -n ${TEST_PROJECT}
 						    oc expose svc/${APP_NAME} -n ${TEST_PROJECT}
-						    oc set volume dc/${APP_NAME} --add --name=bhim-volume --type=persistentVolumeClaim --claim-name=myclaim --mount-path=/mnt/data --containers=${APP_NAME}
+						    def bhim-volume = oc describe pvc myclaim -n ${TEST_PROJECT} |  awk  ' FNR == 5 {print $2}'
+                                                    oc set volume dc/${APP_NAME} --add --name=bhim-volume --type=persistentVolumeClaim --claim-name=myclaim --mount-path=/mnt/data --containers=${APP_NAME}
+						  ###  oc set volume dc/${APP_NAME} --add --name=bhim-volume --type=persistentVolumeClaim --claim-name=myclaim --mount-path=/mnt/data --containers=${APP_NAME}
+						    oc create -f ${bhim_config} -n ${TEST_PROJECT}
+						    oc set volume dc/${APP_NAME} --add --name=bhim-volume --type=configmap --mount-path=/mnt/data --configmap-name=bhim-config
 						'''
 						
                     }
