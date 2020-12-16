@@ -108,6 +108,8 @@ pipeline {
 						sh '''
 						    oc login --token=${IAM_TOKEN} --server=${OPENSHIFT_API}
 						    oc project $TEST_PROJECT
+						    echo '### creating persistent volume and persistent volume claim ###'
+						    oc create -f 
 						    oc new-app --name ${APP_NAME} 169.38.133.228:5000/${APP_NAME}:latest --insecure-registry=true -n ${TEST_PROJECT}
 						   ### oc new-app --name=${APP_NAME} ${APP_NAME}:latest -n ${TEST_PROJECT}
 						    oc expose svc/${APP_NAME} -n ${TEST_PROJECT}
