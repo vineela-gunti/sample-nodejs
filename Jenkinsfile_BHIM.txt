@@ -109,22 +109,7 @@ pipeline {
 						sh '''
 						    oc login --token=${IAM_TOKEN} --server=${OPENSHIFT_API}
 						    oc project $TEST_PROJECT
-						 /*   echo '### creating persistent volume and persistent volume claim ###'
-						    echo "apiVersion: v1
-kind: PersistentVolume
-metadata:
-  name: bhim-volume
-  labels:
-    type: local
-spec:
-  storageClassName: ibmc-file-gold-gid
-  capacity:
-    storage: 2Gi
-  accessModes:
-    - ReadWriteOnce
-  hostPath:
-    path: "/mnt/data"" | oc -n ${TEST_PROJECT} apply -f - */
-							
+						    echo '### creating persistent volume and persistent volume claim ###'							
 						    echo "apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
