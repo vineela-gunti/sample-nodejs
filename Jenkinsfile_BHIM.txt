@@ -129,7 +129,7 @@ spec:
                                                     oc set volume dc/${APP_NAME} --add --name=$BHIM_VOLUME --type=persistentVolumeClaim --claim-name=myclaim --mount-path=/mnt/data --containers=${APP_NAME}
 						  ###  oc set volume dc/${APP_NAME} --add --name=bhim-volume --type=persistentVolumeClaim --claim-name=myclaim --mount-path=/mnt/data --containers=${APP_NAME}
 						    oc create -f ${bhim_config} -n ${TEST_PROJECT}
-						    oc set volume dc/${APP_NAME} --add --name=bhim-volume --type=configmap --mount-path=/mnt/data --configmap-name=bhim-config
+						    oc set volume dc/${APP_NAME} --add --name=$BHIM_VOLUME --type=configmap --mount-path=/mnt/data --configmap-name=bhim-config
 						'''
 						
                     }
