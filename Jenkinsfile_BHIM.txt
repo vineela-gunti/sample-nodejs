@@ -133,7 +133,7 @@ spec:
   - ReadWriteOnce
   resources:
     requests:
-      storage: 1Gi" | oc -n ${TEST_PROJECT} apply -f	
+      storage: 1Gi" | oc -n ${TEST_PROJECT} apply -f -	
 						    oc new-app --name ${APP_NAME} 169.38.133.228:5000/${APP_NAME}:latest --insecure-registry=true -n ${TEST_PROJECT}
 						   ### oc new-app --name=${APP_NAME} ${APP_NAME}:latest -n ${TEST_PROJECT}
 						    oc expose svc/${APP_NAME} -n ${TEST_PROJECT}
