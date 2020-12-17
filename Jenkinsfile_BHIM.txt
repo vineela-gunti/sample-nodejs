@@ -119,6 +119,8 @@ pipeline {
 						  ###  oc set volume dc/${APP_NAME} --add --name=bhim-volume --type=persistentVolumeClaim --claim-name=myclaim --mount-path=/mnt/data --containers=${APP_NAME}
 						    oc create -f ${bhim_config} -n ${TEST_PROJECT}
 						    oc set volume dc/${APP_NAME} --add --name=bhim-conf --type=configmap --mount-path=/etc/config --configmap-name=bhim-config
+						    oc create -f ${bhim_secret} -n ${TEST_PROJECT}
+						    oc set volume dc/${APP_NAME} --add --name=bhim-sec --type=secret --mount-path=/etc/secret --secret-name=bhim-secret
 						'''
 						
                     }
