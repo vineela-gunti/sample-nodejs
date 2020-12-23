@@ -26,7 +26,17 @@ pipeline {
     }
 
     stages {
-    
+        
+	stage('Clone another repository to subdir') {
+  steps {
+    sh 'rm subdir -rf; mkdir subdir'
+    dir ('subdir') {
+      git branch: 'master',
+        url: 'https://github.com/vineela-gunti/node-hello.git'
+    }
+    sh('ls -l')
+  }
+}
         stage('Pipeline Call') {
             steps {
                 build(job: 'hello-world')
