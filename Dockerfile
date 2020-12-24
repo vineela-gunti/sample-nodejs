@@ -15,7 +15,7 @@ USER root
 
 RUN mkdir /src
 RUN mkdir /utils
-COPY utils/signer /utils
+COPY utils/ /utils
 COPY package.json app.js /src/
 RUN cd /src && npm install --unsafe-perm=true --allow-root
 
