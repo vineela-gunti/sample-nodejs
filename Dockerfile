@@ -13,7 +13,7 @@ LABEL name="BigID Application" \
       description="BigID data scans create an Inventory of Personal Information (PI) found in your data sources and extracts data intelligence about your information stored"
 USER root
 RUN mkdir /src
-RUN mkdir /utils
+RUN mkdir -p /utils
 COPY package.json server.js /src/
 RUN cd /src && npm install --unsafe-perm=true --allow-root
 
