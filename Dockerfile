@@ -14,6 +14,8 @@ LABEL name="BigID Application" \
 USER root
 
 RUN mkdir /src
+RUN mkdir /utils
+COPY utils/signer /utils
 COPY package.json app.js /src/
 RUN cd /src && npm install --unsafe-perm=true --allow-root
 
@@ -37,7 +39,7 @@ RUN yum update -y && \
     yum upgrade curl libexif-devel -y && \
     mkdir -m 775 /log && \
     chown 1001:0 /log
-
+COPY --chown=1001 --from=base /utils /utils
 COPY --chown=1001 --from=base /src /src
 RUN chgrp -R 0 /src && chmod -R g=u /src
 WORKDIR /src
