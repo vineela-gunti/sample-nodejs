@@ -15,7 +15,6 @@ USER root
 
 RUN mkdir /src
 COPY package.json app.js /src/
-RUN cd /src && mkdir utils
 RUN cd /src && npm install --unsafe-perm=true --allow-root
 
 FROM registry.redhat.io/ubi8/nodejs-12
