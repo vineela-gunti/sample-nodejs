@@ -80,7 +80,7 @@ pipeline {
 							
 							echo '### Creating new project in Development ###'
 						    oc new-project $TEST_PROJECT
-						    oc create secret docker-registry redhat-registry-secret --docker-username="vineela_gunti" --docker-password=Welcome@9247107040 --docker-server=registry.redhat.io -n $TEST_PROJECT
+						    oc create secret docker-registry redhat-registry-secret --docker-username="vineela_gunti" --docker-password=****** --docker-server=registry.redhat.io -n $TEST_PROJECT
 						    oc secrets link builder redhat-registry-secret -n $TEST_PROJECT
 						    oc secrets link default redhat-registry-secret --for=pull -n $TEST_PROJECT
 						    
