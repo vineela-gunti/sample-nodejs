@@ -1,7 +1,0 @@
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: bhim-config
-data:
-  bhim_version: version1
-  
