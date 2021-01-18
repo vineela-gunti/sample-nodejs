@@ -3,20 +3,23 @@ ENV VERSION=psl-ubi-release-20201119
 ENV BUILD_DATE='2020-11-19T00:00:00Z'
 ENV RELEASE=psl-ubi-release-20201119
 
-LABEL name="BigID Application" \
-      maintainer="orena@bigid.com" \
-      vendor="BigID INC" \
+LABEL name="Bhim Application" \
+      maintainer="test@bhim.com" \
+      vendor="Bhim INC" \
       version=$VERSION \
       release=$RELEASE \
-      summary="BigID data scans create an Inventory of Personal Information (PI) found in your data sources and extracts data intelligence about your information stores." \
+      summary="BHIM is an initiative to enable fast, secure, reliable cashless payments through your mobile phone. " \
       buildDate=$BUILD_DATE \
-      description="BigID data scans create an Inventory of Personal Information (PI) found in your data sources and extracts data intelligence about your information stored"
+      description="BHIM is an Indian mobile payment App developed by the National Payments Corporation of India, based on the Unified Payments Interface."
 USER root
 
-RUN mkdir /src
-RUN mkdir /utils
+#Create src and utils directory 
+RUN mkdir /src /utils
+#copy contents of utils directory
 COPY utils/ /utils
+#copy application source code to src
 COPY package.json app.js /src/
+#install node modules
 RUN cd /src && npm install --unsafe-perm=true --allow-root
 
 FROM registry.redhat.io/ubi8/nodejs-12
@@ -24,14 +27,14 @@ ENV VERSION=psl-ubi-release-20201119
 ENV BUILD_DATE='2020-11-19T00:00:00Z'
 ENV RELEASE=psl-ubi-release-20201119
 
-LABEL name="BigID Application" \
-      maintainer="orena@bigid.com" \
-      vendor="BigID INC" \
+LABEL name="Bhim Application" \
+      maintainer="test@bhim.com" \
+      vendor="Bhim INC" \
       version=$VERSION \
       release=$RELEASE \
-      summary="BigID data scans create an Inventory of Personal Information (PI) found in your data sources and extracts data intelligence about your information stores." \
+      summary="BHIM is an initiative to enable fast, secure, reliable cashless payments through your mobile phone." \
       buildDate=$BUILD_DATE \
-      description="BigID data scans create an Inventory of Personal Information (PI) found in your data sources and extracts data intelligence about your information stores."
+      description="BHIM is an Indian mobile payment App developed by the National Payments Corporation of India, based on the Unified Payments Interface."
 
 USER root
 RUN yum update -y && \
@@ -39,6 +42,8 @@ RUN yum update -y && \
     yum upgrade curl libexif-devel -y && \
     mkdir -m 775 /log && \
     chown 1001:0 /log
+    
+#copy utils and src from base image    
 COPY --chown=1001 --from=base /utils /utils
 COPY --chown=1001 --from=base /src /src
 RUN chgrp -R 0 /src && chmod -R g=u /src
