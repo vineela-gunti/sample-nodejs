@@ -78,9 +78,11 @@ pipeline {
 
 							fi 
 							
-							echo '### Creating new project in Development ###'
+						    echo '### Creating new project in Development ###'
 						    oc new-project $TEST_PROJECT
-						    oc create secret docker-registry redhat-registry-secret --docker-username="vineela_gunti" --docker-password=Welcome@9247107040 --docker-server=registry.redhat.io -n $TEST_PROJECT
+						    
+						    echo '### Create secret to pull Nodejs image from registry.redhat.io  ###'
+						    oc create secret docker-registry redhat-registry-secret --docker-username="vineela_gunti" --docker-password=***** --docker-server=registry.redhat.io -n $TEST_PROJECT
 						    oc secrets link builder redhat-registry-secret -n $TEST_PROJECT
 						    oc secrets link default redhat-registry-secret --for=pull -n $TEST_PROJECT
 						    
@@ -123,18 +125,31 @@ pipeline {
 						sh '''
 						    oc login --token=${IAM_TOKEN} --server=${OPENSHIFT_API}
 						    oc project $TEST_PROJECT
-						    echo '### creating persistent volume and persistent volume claim ###'							
+						    
+						    echo '### creating persistent volume claim ###'							
 						    oc create -f ${bhim_pvc} -n ${TEST_PROJECT}
+						    
+						    echo '### deploying application ###'
 						    oc new-app --name ${APP_NAME} 169.38.133.228:5000/${APP_NAME}:latest --insecure-registry=true -n ${TEST_PROJECT}
+						    
+						    echo '### Pausing deployement to apply configurations ###'
 						    oc rollout pause dc/${APP_NAME} -n ${TEST_PROJECT}
+						    
+						    echo '### Mounting pvc to deployment ###'
 						    BHIM_VOLUME=$(oc describe pvc myclaim -n ${TEST_PROJECT} |  awk  ' FNR == 5 {print $2}')
                                                     oc set volume dc/${APP_NAME} --add --name=$BHIM_VOLUME --type=persistentVolumeClaim --claim-name=myclaim --mount-path=/mnt/data --containers=${APP_NAME}
-						  
+						    echo '### creating configmap and mounting to application ###'
 						    oc create configmap bhim-config --from-file template/configuration.properties -n ${TEST_PROJECT}
 						    oc set volume dc/${APP_NAME} --add --name=bhim-conf --type=configmap --mount-path=/etc/config --configmap-name=bhim-config
+						    
+						    echo '### creating secret and mounting to application ###'
 						    oc create secret generic bhim-secret --from-file template/key.pem -n ${TEST_PROJECT}
 						    oc set volume dc/${APP_NAME} --add --name=bhim-sec --type=secret --mount-path=/etc/secret --secret-name=bhim-secret
+						    
+						    echo '### Resuming deployment ###'
 						    oc rollout resume dc/${APP_NAME} -n ${TEST_PROJECT}
+						    
+						    echo '### Exposing application service ###'
 						    oc expose svc/${APP_NAME} -n ${TEST_PROJECT}
 						'''
 						
