@@ -33,7 +33,7 @@ data:
           templates:
           - condition:
               equals:
-                kubernetes.namespace: kube-system
+                kubernetes.namespace: filebeat
             config:
               - type: container
                 paths:
