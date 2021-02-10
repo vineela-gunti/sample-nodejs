@@ -1,0 +1,122 @@
+pipeline {
+    options {
+        // set a timeout of 60 minutes for this pipeline
+        timeout(time: 60, unit: 'MINUTES')
+    }
+    agent {
+      node {
+          label 'nodejs'
+      }
+    }
+    environment {
+        TEST_PROJECT = "redis-test"
+        FILE_PROJECT = "filebeat"
+        
+		OPENSHIFT_REGISTRY = "default-route-openshift-image-registry.accelerite-openshift-la-fbc03b92adfe8eb26bb2ca99edfad3f7-0000.che01.containers.appdomain.cloud"
+		NEXUS_REPO = "docker-nexus-repo.accelerite-openshift-la-fbc03b92adfe8eb26bb2ca99edfad3f7-0000.che01.containers.appdomain.cloud"
+		OPENSHIFT_API= "https://c103-e.jp-tok.containers.cloud.ibm.com:32369"
+		
+		VERSION = "0.0.1"
+		
+		IAM_USER = credentials('IAM_User')
+		NEXUS_USER = credentials('Nexus_User')
+		BITNAMI_REPO = "https://charts.bitnami.com/bitnami"
+        IAM_TOKEN = credentials('IAM_TOKEN')
+    }
+    stages {
+        
+	stage('Clone another repository to subdir') {
+  steps {
+    sh 'rm subdir -rf; mkdir subdir'
+    dir ('subdir') {
+      git branch: 'master',
+        url: 'https://github.com/vineela-gunti/node-hello.git'
+    }
+    sh('ls -l')
+    sh 'cd subdir'
+    sh 'pwd'
+    sh 'ls'
+  }
+}
+
+        stage('Redis Deployment on Test Environment') {
+            steps {              
+                script {
+                    openshift.withCluster(env.OPENSHIFT_API) {
+						echo '### Creating a new project in Test env ###'
+						sh '''
+						    oc login --token=${IAM_TOKEN} --server=${OPENSHIFT_API}
+							 if [ ! -z "$(oc get projects | grep ${TEST_PROJECT})" ]
+							then
+								echo "Deleting ${TEST_PROJECT} project"
+								
+									oc proxy &
+									oc project ${TEST_PROJECT}
+									oc delete --all all,secret,cm,pvc > /dev/null
+									oc get ns ${TEST_PROJECT} -o json > tempfile
+									sed -i 's/"kubernetes"//g' tempfile
+									
+									curl -k -H "Content-Type: application/json" -X PUT --data-binary @tempfile http://127.0.0.1:8001/api/v1/namespaces/"${TEST_PROJECT}"/finalize
+									sleep 50
+									oc delete project ${TEST_PROJECT}
+									sleep 50
+
+							fi 
+							
+						    echo '### Creating new project in Development ###'
+
+						    oc new-project $TEST_PROJECT
+                oc adm policy add-scc-to-user anyuid system:serviceaccount:${TEST_PROJECT}:default
+                helm repo add bitnami ${BITNAMI_REPO}
+                helm install myrelease --timeout 600s --set global.storageClass=ibmc-file-bronze-gid --set master.persistence.storageClass=ibmc-file-bronze-gid  --set master.persistence.storageClass=ibmc-file-bronze-gid --set slave.persistence.storageClass=ibmc-file-bronze-gid  --set master.service.type=LoadBalancer --set password=secretpassword     bitnami/redis-cluster
+                APP_NAME=$(oc get svc -n ${TEST_PROJECT}
+                oc expose svc/${APP_NAME}
+                oc get secret --namespace ${TEST_PROJECT} ${APP_NAME} -o jsonpath="{.data.redis-password}" | base64 --decode
+ 
+						'''    
+						
+						
+                    }
+                }
+            }
+        }
+        stage('Filebeat Deployment on Test Environment') {
+            steps {              
+                script {
+                    openshift.withCluster(env.OPENSHIFT_API) {
+						echo '### Creating a new project in Test env ###'
+						sh '''
+						    oc login --token=${IAM_TOKEN} --server=${OPENSHIFT_API}
+							 if [ ! -z "$(oc get projects | grep ${FILEBEAT_PROJECT})" ]
+							then
+								echo "Deleting ${FILEBEAT_PROJECT} project"
+								
+									oc proxy &
+									oc project ${FILEBEAT_PROJECT}
+									oc delete --all all,secret,cm,pvc > /dev/null
+									oc get ns ${FILEBEAT_PROJECT} -o json > tempfile
+									sed -i 's/"kubernetes"//g' tempfile
+									
+									curl -k -H "Content-Type: application/json" -X PUT --data-binary @tempfile http://127.0.0.1:8001/api/v1/namespaces/"${TEST_PROJECT}"/finalize
+									sleep 50
+									oc delete project ${FILEBEAT_PROJECT}
+									sleep 50
+
+							fi 
+							
+						    echo '### Creating new project in Development ###'
+						    oc new-project $FILEBEAT_PROJECT
+                echo '### creating filebeat deployment ###'
+                oc adm policy add-scc-to-user privileged system:serviceaccount:${FILEBEAT_PROJECT}:filebeat 
+                oc patch namespace ${FILEBEAT_PROJECT}  -p '{"metadata": {"annotations": {"openshift.io/node-selector": ""}}}' 
+                ## filebeat is string parameter for filebeat deployment file path
+                oc create -f ${filebeat} -n ${FILEBEAT_PROJECT}    
+						    
+						'''
+						
+                    }
+                }
+            }
+        }
+      }
+   }
