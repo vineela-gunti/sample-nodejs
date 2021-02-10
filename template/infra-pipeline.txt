@@ -65,12 +65,12 @@ pipeline {
 							
 						    echo '### Creating new project in Development ###'
 
-						    oc new-project $TEST_PROJECT
+						    oc new-project ${TEST_PROJECT}
                 oc adm policy add-scc-to-user anyuid system:serviceaccount:${TEST_PROJECT}:default
                 helm repo add bitnami ${BITNAMI_REPO}
-                helm install myrelease --timeout 600s --set global.storageClass=ibmc-file-bronze-gid --set master.persistence.storageClass=ibmc-file-bronze-gid  --set master.persistence.storageClass=ibmc-file-bronze-gid --set slave.persistence.storageClass=ibmc-file-bronze-gid  --set master.service.type=LoadBalancer --set password=secretpassword     bitnami/redis-cluster
+                helm install myrelease --timeout 600s --set global.storageClass=ibmc-file-bronze-gid --set master.persistence.storageClass=ibmc-file-bronze-gid  --set master.persistence.storageClass=ibmc-file-bronze-gid --set slave.persistence.storageClass=ibmc-file-bronze-gid  --set master.service.type=LoadBalancer --set password=secretpassword     bitnami/redis-cluster -n ${TEST_PROJECT}
                 APP_NAME=$(oc get svc -n ${TEST_PROJECT}
-                oc expose svc/${APP_NAME}
+                oc expose svc/${APP_NAME} -n ${TEST_PROJECT}
                 oc get secret --namespace ${TEST_PROJECT} ${APP_NAME} -o jsonpath="{.data.redis-password}" | base64 --decode
  
 						'''    
@@ -105,12 +105,12 @@ pipeline {
 							fi 
 							
 						    echo '### Creating new project in Development ###'
-						    oc new-project $FILEBEAT_PROJECT
+						    oc new-project ${FILEBEAT_PROJECT}
                 echo '### creating filebeat deployment ###'
                 oc adm policy add-scc-to-user privileged system:serviceaccount:${FILEBEAT_PROJECT}:filebeat 
                 oc patch namespace ${FILEBEAT_PROJECT}  -p '{"metadata": {"annotations": {"openshift.io/node-selector": ""}}}' 
                 ## filebeat is string parameter for filebeat deployment file path
-                oc create -f ${filebeat} -n ${FILEBEAT_PROJECT}    
+                oc create -f ${filebeat} -n ${FILEBEAT_PROJECT} -n ${FILEBEAT_PROJECT}   
 						    
 						'''
 						
