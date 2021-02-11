@@ -33,9 +33,7 @@ pipeline {
         url: 'https://github.com/vineela-gunti/node-hello.git'
     }
     sh('ls -l')
-    sh 'cd subdir'
     sh 'pwd'
-    sh 'ls'
   }
 }
 
@@ -153,7 +151,7 @@ pipeline {
 							CLUSTER_IP=$(oc get svc/postgres -n ${ANCHORE_PROJECT}|  awk  ' FNR == 2 {print $3}')
 							PORT=$(oc get svc/postgres -n ${ANCHORE_PROJECT} |  awk  -F '/' ' FNR == 2 {print $1}' | awk 'FNR==1 {print$5}')
 							##replacing postgres service endpoint in anchore values
-							sed -i '14s/.*/  externalEndpoint: ${CLUSTER_IP}:${PORT}/' ${anchore-values}
+							sed -i '14s/.*/  externalEndpoint: ${CLUSTER_IP}:${PORT}/' <anchore-values.yaml>
 							helm repo add anchore ${ANCHORE_REPO}
 							##anchore-values is string parameter for anchore_values.yaml path
 							helm install myrelease -f ${anchore-values} anchore/anchore-engine -n ${ANCHORE_PROJECT}
