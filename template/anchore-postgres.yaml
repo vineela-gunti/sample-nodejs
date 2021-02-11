@@ -39,3 +39,15 @@ spec:
         from:
           kind: "ImageStreamTag"
           name: "anchore-postgres:latest" 
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: postgres
+spec:
+  ports:
+    - protocol: TCP
+      port: 5432
+      targetPort: 5432
+  selector:
+    app: postgres          
