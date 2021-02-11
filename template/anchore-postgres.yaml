@@ -1,0 +1,41 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  labels:
+    app: postgres
+  name: postgres
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: postgres
+  strategy: {}
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: postgres
+    spec:
+      containers:
+      - image: docker.io/anchore/engine-db-preload:latest
+        name: engine-db-preload
+        env:
+        - name: POSTGRES_PASSWORD 
+          value: "anchore"
+        volumeMounts:
+        - name: data
+          mountPath: /var/lib/postgresql/data
+      volumes:
+      - name: data
+        persistentVolumeClaim:
+          claimName: anchore-engine-postgresql
+    triggers:
+    - type: "ImageChange" 
+      imageChangeParams:
+        automatic: true
+        containerNames:
+          - "engine-db-preload"
+        from:
+          kind: "ImageStreamTag"
+          name: "anchore-postgres:latest" 
