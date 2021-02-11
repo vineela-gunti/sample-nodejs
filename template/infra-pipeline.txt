@@ -118,5 +118,47 @@ pipeline {
                 }
             }
         }
+	
+	        stage('Redis Deployment on Test Environment') {
+            steps {              
+                script {
+                    openshift.withCluster(env.OPENSHIFT_API) {
+						echo '### Creating a new project in Test env ###'
+						sh '''
+						    oc login --token=${IAM_TOKEN} --server=${OPENSHIFT_API}
+							 if [ ! -z "$(oc get projects | grep ${ANCHORE_PROJECT})" ]
+							then
+								echo "Deleting ${ANCHORE_PROJECT} project"
+								
+									oc proxy &
+									oc project ${ANCHORE_PROJECT}
+									oc delete --all all,secret,cm,pvc > /dev/null
+									oc get ns ${ANCHORE_PROJECT} -o json > tempfile
+									sed -i 's/"kubernetes"//g' tempfile
+									
+									curl -k -H "Content-Type: application/json" -X PUT --data-binary @tempfile http://127.0.0.1:8001/api/v1/namespaces/"${TEST_PROJECT}"/finalize
+									sleep 50
+									oc delete project ${ANCHORE_PROJECT}
+									sleep 50
+
+							fi 
+							
+						    echo '### Creating new project in Development ###'
+
+						    oc new-project ${ANCHORE_PROJECT}
+                oc adm policy add-scc-to-user anyuid system:serviceaccount:${ANCHORE_PROJECT}:default
+                helm repo add anchore ${ANCHORE_REPO}
+                ##anchore-values is string parameter for anchore_values.yaml path
+                helm install myrelease -f ${anchore-values} anchore/anchore-engine -n ${ANCHORE_PROJECT}
+                oc expose svc/myrelease-anchore-engine-api -n ${ANCHORE_PROJECT}
+
+ 
+						'''    
+						
+						
+                    }
+                }
+            }
+        }
       }
    }
