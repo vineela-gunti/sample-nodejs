@@ -147,6 +147,9 @@ pipeline {
 
 							oc new-project ${ANCHORE_PROJECT}
 							oc adm policy add-scc-to-user anyuid system:serviceaccount:${ANCHORE_PROJECT}:default
+						    echo '### Postgres Deployment ###'
+						    ###anchore-postgres is string parameter for posgres.yaml path
+						        oc create -f ${anchore-postgres} -n ${ANCHORE_PROJECT}
 							helm repo add anchore ${ANCHORE_REPO}
 							##anchore-values is string parameter for anchore_values.yaml path
 							helm install myrelease -f ${anchore-values} anchore/anchore-engine -n ${ANCHORE_PROJECT}
