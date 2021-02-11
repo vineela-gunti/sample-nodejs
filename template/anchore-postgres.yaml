@@ -39,6 +39,18 @@ spec:
         from:
           kind: "ImageStreamTag"
           name: "anchore-postgres:latest" 
+          
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: anchore-engine-postgresql
+spec:
+  accessModes:
+  - ReadWriteOnce
+  resources:
+    requests:
+      storage: 20Gi
 ---
 apiVersion: v1
 kind: Service
