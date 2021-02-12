@@ -9,7 +9,8 @@ pipeline {
       }
     }
     environment {
-        ANCHORE_PROJECT = "anchore-test"
+        ANCHORE_PROJECT = "redis-test"
+        FILE_PROJECT = "filebeat"
         
 		OPENSHIFT_REGISTRY = "default-route-openshift-image-registry.accelerite-openshift-la-fbc03b92adfe8eb26bb2ca99edfad3f7-0000.che01.containers.appdomain.cloud"
 		NEXUS_REPO = "docker-nexus-repo.accelerite-openshift-la-fbc03b92adfe8eb26bb2ca99edfad3f7-0000.che01.containers.appdomain.cloud"
@@ -19,46 +20,33 @@ pipeline {
 		
 		IAM_USER = credentials('IAM_User')
 		NEXUS_USER = credentials('Nexus_User')
-		ANCHORE_REPO = "https://charts.anchore.io"
+		BITNAMI_REPO = "https://charts.bitnami.com/bitnami"
         IAM_TOKEN = credentials('IAM_TOKEN')
     }
-    stages {
-        
-	stage('Clone another repository to subdir') {
-  steps {
-    sh 'rm subdir -rf; mkdir subdir'
-    dir ('subdir') {
-      git branch: 'master',
-        url: 'https://github.com/vineela-gunti/node-hello.git'
-    }
-    sh('ls -l')
-    sh 'cd subdir'
-    sh 'pwd'
-    sh 'ls'
-  }
-}
+   
 
-        stage('Redis Deployment on Test Environment') {
+        stage('Importing Postgres Preload image on Test Environment') {
             steps {              
                 script {
                     openshift.withCluster(env.OPENSHIFT_API) {
 						echo '### Creating a new project in Test env ###'
 						sh '''
 						    oc login --token=${IAM_TOKEN} --server=${OPENSHIFT_API}
-							 if [ ! -z "$(oc get projects | grep ${ANCHORE_PROJECT})" ]{ 
-		
-								oc proxy &
-								oc project ${ANCHORE_PROJECT}
-								oc import-image anchore-postgres --confirm --all --from docker.io/anchore/engine-db-preload --scheduled=true -n ${ANCHORE_PROJECT} 
+							 if [ ! -z "$(oc get projects | grep ${ANCHORE_PROJECT})" ]
+							then
+								
+								
+									oc proxy &
+									oc project ${ANCHORE_PROJECT}
+									oc import-image anchore-postgres --confirm --all --from docker.io/anchore/engine-db-preload --scheduled=true -n ${ANCHORE_PROJECT} 
 
-					                  }
-							else { 
+							fi 
+							
 						    echo '### Creating new project in Development ###'
 
 						    oc new-project ${ANCHORE_PROJECT}
                                                     oc import-image anchore-postgres --confirm --all --from docker.io/anchore/engine-db-preload --scheduled=true -n ${ANCHORE_PROJECT} 
-
-                                                 }
+ 
 						'''    
 						
 						
@@ -66,5 +54,5 @@ pipeline {
                 }
             }
         }
-    }
- }
+	}
+	}
