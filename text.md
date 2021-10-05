@@ -2,36 +2,36 @@
 1. pom.xml file changes
    - a. Replaced parent confirguration from
    ```xml
-        <parent>\
-        <groupId>com.bluedart.cosmat</groupId> \
-        <artifactId>c2pc-application</artifactId> \
-        <version>0.0.1-SNAPSHOT</version> \
+        <parent>
+        <groupId>com.bluedart.cosmat</groupId> 
+        <artifactId>c2pc-application</artifactId> 
+        <version>0.0.1-SNAPSHOT</version> 
         </parent>
     ```    
     to 
     ```xml
-    <parent>\
-    <groupId>org.springframework.boot</groupId> \
-    <artifactId>spring-boot-starter-parent</artifactId> \
-    <version>2.4.4</version> \
-    <relativePath /> \ 
+    <parent>
+    <groupId>org.springframework.boot</groupId> 
+    <artifactId>spring-boot-starter-parent</artifactId> 
+    <version>2.4.4</version> 
+    <relativePath /> 
     </parent>
     ``` 
    - b.  Added properties configuration
    ```xml
-    <properties>\
-    <java.version>11</java.version>\
-    <spring-cloud.version>2020.0.3</spring-cloud.version>\
-    <oracle.version>21.1.0.0</oracle.version>\
-    <blaze.version>1.6.1</blaze.version>\
+    <properties>
+    <java.version>11</java.version>
+    <spring-cloud.version>2020.0.3</spring-cloud.version>
+    <oracle.version>21.1.0.0</oracle.version>
+    <blaze.version>1.6.1</blaze.version>
     </properties>
     ``` 
    - c.  Added commons service dependency
    ```xml
-    <dependency>\
-    <groupId>com.bluedart.cosmat</groupId> \
-    <artifactId>commons-service</artifactId> \
-    <version>0.0.1-SNAPSHOT</version> \
+    <dependency>
+    <groupId>com.bluedart.cosmat</groupId> 
+    <artifactId>commons-service</artifactId> 
+    <version>0.0.1-SNAPSHOT</version> 
     </dependency>
     ``` 
 2.  Added configuration/settings.xml file in Git with artifactory configurations
