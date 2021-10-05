@@ -1,11 +1,13 @@
 # S2I approach for Java based services (Backend services)
 1. pom.xml file changes
    - a. Replaced parent confirguration from
+   ```xml
         <parent>\
         <groupId>com.bluedart.cosmat</groupId> \
         <artifactId>c2pc-application</artifactId> \
         <version>0.0.1-SNAPSHOT</version> \
         </parent>
+    ```    
     to 
     <parent>\
     <groupId>org.springframework.boot</groupId> \
