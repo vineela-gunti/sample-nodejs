@@ -13,20 +13,19 @@
         <version>2.4.4</version>\
         <relativePath />\
     </parent>\
-
-   - b.  Added properties configuration\
+   - b.  Added properties configuration
     <properties>\
         <java.version>11</java.version>\
         <spring-cloud.version>2020.0.3</spring-cloud.version>\
         <oracle.version>21.1.0.0</oracle.version>\
         <blaze.version>1.6.1</blaze.version>\
     </properties>\
-   - c.  Added commons service dependency\ 
+   - c.  Added commons service dependency
     <dependency>\
         <groupId>com.bluedart.cosmat</groupId>\
         <artifactId>commons-service</artifactId>\
         <version>0.0.1-SNAPSHOT</version>\
-    </dependency>\
+    </dependency>
 2.  Added configuration/settings.xml file in Git with artifactory configurations
 3.  Generated json files by triggering openshift/namespace creation job
 4. updated s2i image in build.json with openjdk11:latest from ecs-c2ng-build namespace
