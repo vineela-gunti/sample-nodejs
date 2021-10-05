@@ -1,17 +1,17 @@
 # S2I approach for Java based services (Backend services)
 1. pom.xml file changes
-   - a. Replaced parent confirguration from\
+   - a. Replaced parent confirguration from
     <parent>\
-        <groupId>com.bluedart.cosmat</groupId>\
-        <artifactId>c2pc-application</artifactId>\
-        <version>0.0.1-SNAPSHOT</version>\
+        <groupId>com.bluedart.cosmat</groupId> \
+        <artifactId>c2pc-application</artifactId> \
+        <version>0.0.1-SNAPSHOT</version> \
     </parent>\
-    to \
+    to 
     <parent>\
-        <groupId>org.springframework.boot</groupId>\
-        <artifactId>spring-boot-starter-parent</artifactId>\
-        <version>2.4.4</version>\
-        <relativePath />\
+        <groupId>org.springframework.boot</groupId> \
+        <artifactId>spring-boot-starter-parent</artifactId> \
+        <version>2.4.4</version> \
+        <relativePath /> \ 
     </parent>\
    - b.  Added properties configuration
     <properties>\
@@ -22,9 +22,9 @@
     </properties>\
    - c.  Added commons service dependency
     <dependency>\
-        <groupId>com.bluedart.cosmat</groupId>\
-        <artifactId>commons-service</artifactId>\
-        <version>0.0.1-SNAPSHOT</version>\
+        <groupId>com.bluedart.cosmat</groupId> \
+        <artifactId>commons-service</artifactId> \
+        <version>0.0.1-SNAPSHOT</version> \
     </dependency>
 2.  Added configuration/settings.xml file in Git with artifactory configurations
 3.  Generated json files by triggering openshift/namespace creation job
