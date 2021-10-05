@@ -21,7 +21,7 @@
         <oracle.version>21.1.0.0</oracle.version>\
         <blaze.version>1.6.1</blaze.version>\
     </properties>\
-    - c.  Added commons service dependency\ 
+   - c.  Added commons service dependency\ 
     <dependency>\
         <groupId>com.bluedart.cosmat</groupId>\
         <artifactId>commons-service</artifactId>\
