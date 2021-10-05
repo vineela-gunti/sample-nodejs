@@ -50,7 +50,7 @@
    -	podman push default-route-openshift-image-registry.apps.mykulocp001.dhl.com/ecs-c2ng-build/nodejs-nginx-s2i:latest
 
 3. adding custom script in package.json 
-"deploy": "rm -rf /usr/share/nginx/html/* && cp -r /opt/app-root/src/dist/* /usr/share/nginx/html/ && nginx -g 'daemon off;'",
+ - "deploy": "rm -rf /usr/share/nginx/html/* && cp -r /opt/app-root/src/dist/* /usr/share/nginx/html/ && nginx -g 'daemon off;'",
 4. Generated json files by triggering openshift/namespace creation job
 5. Setting environment variable NPM_RUN=deploy to run the custom script "deploy" from package.json in BuildConfig object
 6. updated s2i image in build.json with nodejs-nginx-s2i:latest from ecs-c2ng-build namespace
